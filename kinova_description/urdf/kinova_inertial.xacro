@@ -31,6 +31,7 @@
    hand_2finger   		56
    finger_proximal		57
    finger_distal      58
+   vision_module      59
 -->
 
 <xacro:macro name="inertia_cylinder" params="mass height radius axis:=0">
@@ -187,6 +188,16 @@
 
   <!-- finger_distal = 58 -->
   <xacro:unless value="${mesh_no - 58}">
+    <inertial>
+        <mass value="0.01" />
+        <origin xyz="0.022 0 0" />
+        <xacro:inertia_cylinder height="0.03"  radius = "0.004" mass="0.01"/>
+    </inertial>
+  </xacro:unless>
+
+  <!-- vision_module = 59 -->
+  <!-- TODO edit this to match reality -->
+  <xacro:unless value="${mesh_no - 59}">
     <inertial>
         <mass value="0.01" />
         <origin xyz="0.022 0 0" />
