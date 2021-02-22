@@ -1,6 +1,6 @@
 moveit_setup_assistant_config:
   URDF:
-    package: i3dr_kinova-ros
+    package: kinova_description
     relative_path: urdf/j2s7s000_standalone.xacro
     xacro_args: "--inorder "
   SRDF:
