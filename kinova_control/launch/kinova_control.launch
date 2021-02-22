@@ -3,47 +3,43 @@
   <arg name="kinova_robotName" default="$(arg kinova_robotType)"/>  
   <arg name="use_trajectory_controller" default="true"/>
   <arg name="is7dof" default="false"/>
+  <arg name="isGripper" default="false"/>
 
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <rosparam file="$(find kinova_control)/config/$(arg kinova_robotName)_control.yaml" command="load"/>
+
+  <arg if="$(arg isGripper)" name="joint_finger_controller_args" default="finger_2_position_controller finger_1_position_controller 
+              finger_3_position_controller finger_tip_1_position_controller
+              finger_tip_2_position_controller finger_tip_3_position_controller"/>
+  <arg if="$(arg isGripper)" name="effort_controller_args" default="effort_joint_trajectory_controller
+    effort_finger_trajectory_controller    
+    finger_tip_1_position_controller
+    finger_tip_2_position_controller 
+    finger_tip_3_position_controller
+    joint_state_controller"/>
+
+  <arg unless="$(arg isGripper)" name="joint_finger_controller_args" default=""/>
+  <arg unless="$(arg isGripper)" name="effort_controller_args" default="effort_joint_trajectory_controller joint_state_controller"/>
+
+  <arg if="$(arg is7dof)" name="joint_controller_args" default="joint_1_position_controller joint_2_position_controller  
+              joint_3_position_controller joint_4_position_controller
+              joint_5_position_controller joint_6_position_controller joint_7_position_controller"/>
+  <arg unless="$(arg is7dof)" name="joint_controller_args" default="joint_1_position_controller joint_2_position_controller  
+              joint_3_position_controller joint_4_position_controller
+              joint_5_position_controller joint_6_position_controller"/>
  
   <group unless="$(arg use_trajectory_controller)">
-    <group unless="$(arg is7dof)">
-      <!-- load the joint by joint position controllers -->  
-      <node name="$(arg kinova_robotName)_joints_controller" pkg="controller_manager" type="spawner" respawn="false"
-        output="screen" ns="$(arg kinova_robotName)" 
-       args="joint_1_position_controller joint_2_position_controller  
-               joint_3_position_controller joint_4_position_controller
-               joint_5_position_controller joint_6_position_controller 
-               finger_2_position_controller finger_1_position_controller 
-               finger_3_position_controller finger_tip_1_position_controller
-               finger_tip_2_position_controller finger_tip_3_position_controller
-               joint_state_controller"/> 
-    </group>
-    <group if="$(arg is7dof)">
-      <!-- load the joint by joint position controllers -->  
-      <node name="$(arg kinova_robotName)_joints_controller" pkg="controller_manager" type="spawner" respawn="false"
-        output="screen" ns="$(arg kinova_robotName)" 
-       args="joint_1_position_controller joint_2_position_controller  
-               joint_3_position_controller joint_4_position_controller
-               joint_5_position_controller joint_6_position_controller joint_7_position_controller
-               finger_2_position_controller finger_1_position_controller 
-               finger_3_position_controller finger_tip_1_position_controller
-               finger_tip_2_position_controller finger_tip_3_position_controller
-               joint_state_controller"/> 
-    </group>
+    <!-- load the joint by joint position controllers -->  
+    <node name="$(arg kinova_robotName)_joints_controller" pkg="controller_manager" type="spawner" respawn="false"
+      output="screen" ns="$(arg kinova_robotName)" 
+      args="$(arg joint_controller_args) $(arg joint_finger_controller_args) joint_state_controller"/> 
   </group>
 
   <group if="$(arg use_trajectory_controller)">
     <!-- Effort Joint trajectory controller-->
     <node name="$(arg kinova_robotName)_trajectory_controller" pkg="controller_manager" type="spawner" 
       output="screen" ns="$(arg kinova_robotName)" 
-      args="effort_joint_trajectory_controller
-      effort_finger_trajectory_controller    
-      finger_tip_1_position_controller
-      finger_tip_2_position_controller 
-      finger_tip_3_position_controller
-      joint_state_controller"/>    
+      args="$(arg effort_controller_args)"/>    
   </group>
 
   <!-- convert joint states to TF transforms for rviz, etc -->

@@ -199,9 +199,9 @@
   <!-- TODO edit this to match reality -->
   <xacro:unless value="${mesh_no - 59}">
     <inertial>
-        <mass value="0.01" />
-        <origin xyz="0.022 0 0" />
-        <xacro:inertia_cylinder height="0.03"  radius = "0.004" mass="0.01"/>
+        <mass value="0.99" />
+        <origin xyz="0 0 -0.06" />
+        <xacro:inertia_cylinder height="0.03"  radius = "0.04" mass="0.727"/>
     </inertial>
   </xacro:unless>
 
